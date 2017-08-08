@@ -1,33 +1,11 @@
 import math
 import numpy as np
-import csv
 import tensorflow as tf
 
-# data files
-TRAIN_FILE = "train_data.csv"
-TEST_FILE = "test_data.csv"
 
 # parameter
 NUM_CLASSES = 2
 NUM_FEATURES = 6
-
-
-def read_data(filename):
-    with open(filename, 'r') as csvfile:
-        reader = csv.reader(csvfile)
-        data_list = list(reader)
-        features = []
-        labels = []
-        for item in data_list:
-            item_feature = list(map(float, item[:6]))
-            item_feature = list(map(int, item_feature))
-            item_label = int(item[6])
-            features.append(item_feature)
-            labels.append(item_label)
-
-    features = np.asarray(features)
-    labels = np.asarray(labels)
-    return features, labels
 
 
 def inference(features, hidden1_units, hidden2_units):
@@ -102,16 +80,16 @@ def evaluation(logits, labels):
     return tf.reduce_sum(tf.cast(correct, tf.int32))
 
 
-def placeholder_inputs(batch_size):
+def placeholder_inputs(holder_size):
     """
     Args:
-        batch_size: The batch size will be baked into both placeholders.
+        holder_size: The size will be baked into both placeholders.
     Returns:
         features_placeholder: Features placeholder.
         labels_placeholder: Labels placeholder.
     """
-    features_placeholder = tf.placeholder(tf.float32, shape=(batch_size, NUM_FEATURES))
-    labels_placeholder = tf.placeholder(tf.int32, shape=(batch_size))
+    features_placeholder = tf.placeholder(tf.float32, shape=(holder_size, NUM_FEATURES))
+    labels_placeholder = tf.placeholder(tf.int32, shape=(holder_size))
     return features_placeholder, labels_placeholder
 
 
@@ -135,23 +113,7 @@ def next_batch(num, features, labels):
     return next_features, next_labels
 
 
-def fill_feed_dict(feature_set, label_set, features_pl, labels_pl, batch_size):
-    """
-    Args:
-        feature_set: The set of features
-        label_set: The set of labels
-        features_pl: The features placeholder, from placeholder_inputs().
-        labels_pl: The labels placeholder, from placeholder_inputs().
-    Returns:
-        feed_dict: The feed dictionary mapping from placeholders to values.
-    """
-    # Create the feed_dict for the placeholders filled with the next `batch size` examples.
-    features_feed, labels_feed = next_batch(batch_size, feature_set, label_set)
-    feed_dict = {features_pl: features_feed, labels_pl: labels_feed}
-    return feed_dict
-
-
-def do_eval(sess, eval_correct, features_placeholder, labels_placeholder, feature_eval, label_eval, batch_size):
+def do_eval(sess, eval_correct, features_placeholder, labels_placeholder, feature_eval, label_eval):
     """
     Args:
         sess: The session in which the model has been trained.
@@ -160,14 +122,10 @@ def do_eval(sess, eval_correct, features_placeholder, labels_placeholder, featur
         labels_placeholder: The labels placeholder.
         feature_eval: The set of features to evaluate
         label_eval: The set of labels to evaluate
-        batch_size: Size of batch
     """
-    true_count = 0  # Counts the number of correct predictions.
-    steps_per_epoch = len(feature_eval) // batch_size
-    num_examples = steps_per_epoch * batch_size
-    for step in range(steps_per_epoch):
-        feed_dict = fill_feed_dict(feature_eval, label_eval, features_placeholder, labels_placeholder, batch_size)
-        true_count += sess.run(eval_correct, feed_dict=feed_dict)
+    feed_dict = {features_placeholder: feature_eval, labels_placeholder: label_eval}
+    true_count = sess.run(eval_correct, feed_dict=feed_dict)
+    num_examples = len(label_eval)
     precision = float(true_count) / num_examples
     print('Num examples: %d  Num correct: %d  Precision @ 1: %0.04f' % (num_examples, true_count, precision))
 
