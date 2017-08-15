@@ -1,11 +1,9 @@
 import math
-import numpy as np
 import tensorflow as tf
-
 
 # parameter
 NUM_CLASSES = 2
-NUM_FEATURES = 6
+NUM_FEATURES = 5
 
 
 def inference(features, hidden1_units, hidden2_units):
@@ -35,7 +33,7 @@ def inference(features, hidden1_units, hidden2_units):
     return logits
 
 
-def lossfn(logits, labels):
+def loss(logits, labels):
     """
     Args
         logits: Logits tensor, float - [batch_size, NUM_CLASSES].
@@ -78,55 +76,5 @@ def evaluation(logits, labels):
     correct = tf.nn.in_top_k(logits, labels, 1)
     # Return the number of true entries.
     return tf.reduce_sum(tf.cast(correct, tf.int32))
-
-
-def placeholder_inputs(holder_size):
-    """
-    Args:
-        holder_size: The size will be baked into both placeholders.
-    Returns:
-        features_placeholder: Features placeholder.
-        labels_placeholder: Labels placeholder.
-    """
-    features_placeholder = tf.placeholder(tf.float32, shape=(holder_size, NUM_FEATURES))
-    labels_placeholder = tf.placeholder(tf.int32, shape=(holder_size))
-    return features_placeholder, labels_placeholder
-
-
-def next_batch(num, features, labels):
-    """
-    Args:
-        num: Size of next batch
-        features: Features of data
-        labels: Labels of data
-    Returns:
-        next_features: features of next batch
-        next_labels: labels of next batch
-    """
-    idx = np.arange(0, len(features))
-    np.random.shuffle(idx)
-    idx = idx[:num]
-    feature_shuffle = [features[i] for i in idx]
-    labels_shuffle = [labels[i] for i in idx]
-    next_features = np.asarray(feature_shuffle)
-    next_labels = np.asarray(labels_shuffle)
-    return next_features, next_labels
-
-
-def do_eval(sess, eval_correct, features_placeholder, labels_placeholder, feature_eval, label_eval):
-    """
-    Args:
-        sess: The session in which the model has been trained.
-        eval_correct: The Op that returns the number of correct predictions.
-        features_placeholder: The images placeholder.
-        labels_placeholder: The labels placeholder.
-        feature_eval: The set of features to evaluate
-        label_eval: The set of labels to evaluate
-    """
-    feed_dict = {features_placeholder: feature_eval, labels_placeholder: label_eval}
-    true_count = sess.run(eval_correct, feed_dict=feed_dict)
-    num_examples = len(label_eval)
-    precision = float(true_count) / num_examples
-    print('Num examples: %d  Num correct: %d  Precision @ 1: %0.04f' % (num_examples, true_count, precision))
 
 

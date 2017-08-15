@@ -5,8 +5,8 @@ import tensorflow as tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # Data sets
-IRIS_TRAINING = "train_data.csv"
-IRIS_TEST = "test_data.csv"
+IRIS_TRAINING = "./data/train_data.csv"
+IRIS_TEST = "./data/test_data.csv"
 
 
 def main():

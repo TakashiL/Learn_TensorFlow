@@ -68,6 +68,8 @@ def fill_feed_dict(data_set, images_pl, labels_pl):
   """
   # Create the feed_dict for the placeholders filled with the next `batch size` examples.
   images_feed, labels_feed = data_set.next_batch(FLAGS.batch_size, FLAGS.fake_data)
+  print(images_feed)
+  print(labels_feed)
   feed_dict = {
       images_pl: images_feed,
       labels_pl: labels_feed,
@@ -222,7 +224,7 @@ if __name__ == '__main__':
   parser.add_argument(
       '--max_steps',
       type=int,
-      default=30000,
+      default=1000,
       help='Number of steps to run trainer.'
   )
   parser.add_argument(

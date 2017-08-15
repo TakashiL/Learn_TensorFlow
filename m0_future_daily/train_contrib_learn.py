@@ -9,7 +9,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 def build_classifier():
     # Sepcify that all features have real-value data
-    feature_columns = [tf.contrib.layers.real_valued_column("", dimension=6)]
+    feature_columns = [tf.contrib.layers.real_valued_column("", dimension=5)]
     # Build 3 layer DNN with specified units respectively.
     classifier = tf.contrib.learn.DNNClassifier(
         feature_columns=feature_columns,
@@ -56,9 +56,9 @@ def main(_):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--max_steps', type=int, default=20000, help='Number of steps to run trainer.')
-    parser.add_argument('--hidden1', type=int, default=20, help='Number of units in hidden layer 1.')
+    parser.add_argument('--hidden1', type=int, default=10, help='Number of units in hidden layer 1.')
     parser.add_argument('--hidden2', type=int, default=20, help='Number of units in hidden layer 2.')
-    parser.add_argument('--hidden3', type=int, default=20, help='Number of units in hidden layer 3.')
+    parser.add_argument('--hidden3', type=int, default=10, help='Number of units in hidden layer 3.')
     parser.add_argument('--log_dir', type=str, default='.\savedir/DNN_model', help='Directory to put the log data.')
 
     FLAGS, unparsed = parser.parse_known_args()
